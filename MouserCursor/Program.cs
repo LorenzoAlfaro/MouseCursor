@@ -7,11 +7,52 @@ namespace MouserCursor
 {
     class Program
     {
+        static int x_left = 84;
+        static int x_right = 155;
+        static int y_up = 807;
+        static int y_down = 752;
         static void Main(string[] args)
         {
             IntPtr desktopWinHandle = Win32.GetDesktopWindow();
+            int X=0;
+            int Y=0;
+            Win32.POINT p = new Win32.POINT(155, 755);
+            
+
             while (true)
             {
+                // Check for mouse position
+                Point pos = Win32.GetCursorPosition();
+                //Win32.ClientToScreen(desktopWinHandle, ref p);
+
+                //if( pos.X == x_left & pos.Y > y_down & pos.Y < y_up)
+                //{
+                //    Win32.SetCursorPos(pos.X-10, pos.Y);
+                //}
+
+                //if (pos.X == x_right & pos.Y > y_down & pos.Y < y_up)
+                //{
+                //    Win32.SetCursorPos(pos.X+10, pos.Y);
+                //}
+
+                if (inside(pos.X, pos.Y, x_left, x_right, y_up, y_down))
+                {
+                    //Win32.ClientToScreen(desktopWinHandle, ref p);
+                    //Win32.SetCursorPos(closestX(pos.X,x_left,x_right), closestY(pos.Y,y_up,y_down));
+
+
+                    if (pos.Y < y_up & pos.Y > y_down)
+                    {
+                        Win32.SetCursorPos(closestX(pos.X, x_right, x_left), pos.Y);
+                    }
+                    if (pos.X> x_left & pos.X < x_right)
+                    {
+                        Win32.SetCursorPos(pos.X, closestY(pos.Y, y_up, y_down));
+                    }
+
+                }
+
+
                 //System.Threading.Thread.Sleep(10);
                 for (int KEY = 8; KEY <= 190; KEY++)
                 {
@@ -23,13 +64,14 @@ namespace MouserCursor
                             if (KEY == 66) //b
                             {
                                 Unselect(desktopWinHandle);                                                                                                                                
-                                RightClick();                                                                
+                                //RightClick();                                                                
                             }
                             if (KEY == 78) //n
                             {
-                                Unselect(desktopWinHandle);                                
-                                A_Press();                                
-                                LeftClick();                                                           
+                                Unselect(desktopWinHandle);
+                                RightClick();
+                                //A_Press();                                
+                                //LeftClick();                                                           
                             }
                         }
                         
@@ -38,6 +80,40 @@ namespace MouserCursor
             }
 
         }
+
+        static bool inside( int x, int y, int x_left, int x_right, int y_up, int y_down)
+        {
+            return x > x_left & x < x_right & y < y_up & y > y_down;
+        }
+
+        static int closestX(int x, int x_left, int x_right) {
+
+            int delta1 = Math.Abs(x - x_left);
+            int delta2 = Math.Abs(x - x_right);
+
+            if( delta2 < delta1)
+            {
+                return x_right;
+            }
+
+            return x_left;
+        }
+
+        static int closestY(int y, int y_up, int y_down)
+        {
+
+            int delta1 = Math.Abs(y - y_up);
+            int delta2 = Math.Abs(y - y_down);
+
+            if (delta2 < delta1)
+            {
+                return y_down;
+            }
+
+            return y_up;
+        }
+
+
 
         static void Unselect(IntPtr desktopWinHandle)
         {            
