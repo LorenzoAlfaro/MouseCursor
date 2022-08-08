@@ -1,14 +1,15 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using System.Drawing;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 
 namespace MouserCursor
 {
     class Program
     {
-        static int x_left = 84;
-        static int x_right = 155;
+        static int x_left = 83;
+        static int x_right = 157;
         static int y_up = 807;
         static int y_down = 752;
         static void Main(string[] args)
@@ -17,41 +18,38 @@ namespace MouserCursor
             int X=0;
             int Y=0;
             Win32.POINT p = new Win32.POINT(155, 755);
+            int[] array = new int[4];
             
 
             while (true)
             {
                 // Check for mouse position
-                Point pos = Win32.GetCursorPosition();
-                //Win32.ClientToScreen(desktopWinHandle, ref p);
-
-                //if( pos.X == x_left & pos.Y > y_down & pos.Y < y_up)
-                //{
-                //    Win32.SetCursorPos(pos.X-10, pos.Y);
-                //}
-
-                //if (pos.X == x_right & pos.Y > y_down & pos.Y < y_up)
-                //{
-                //    Win32.SetCursorPos(pos.X+10, pos.Y);
-                //}
-
+                Point pos = Win32.GetCursorPosition();                                
                 if (inside(pos.X, pos.Y, x_left, x_right, y_up, y_down))
-                {
-                    //Win32.ClientToScreen(desktopWinHandle, ref p);
-                    //Win32.SetCursorPos(closestX(pos.X,x_left,x_right), closestY(pos.Y,y_up,y_down));
-
-
-                    if (pos.Y < y_up & pos.Y > y_down)
+                {                    
+                    
+                    array[3] = Math.Abs(pos.X - x_right);
+                    array[2] = Math.Abs(pos.X - x_left);
+                    array[1] = Math.Abs(pos.Y - y_up);
+                    array[0] = Math.Abs(pos.Y - y_down);
+                    
+                    var index = array.Select((v, i) => new { Index = i, Val = v }).FirstOrDefault(v => v.Val == array.Min()).Index;  
+                    switch (index)
                     {
-                        Win32.SetCursorPos(closestX(pos.X, x_right, x_left), pos.Y);
-                    }
-                    if (pos.X> x_left & pos.X < x_right)
-                    {
-                        Win32.SetCursorPos(pos.X, closestY(pos.Y, y_up, y_down));
-                    }
-
+                        case 3:
+                            Win32.SetCursorPos(x_right, pos.Y);                            
+                            break;
+                        case 2:
+                            Win32.SetCursorPos(x_left, pos.Y);                            
+                            break;
+                        case 1:
+                            Win32.SetCursorPos(pos.X, y_up);                            
+                            break;
+                        case 0:
+                            Win32.SetCursorPos(pos.X, y_down);                            
+                            break;
+                    }                  
                 }
-
 
                 //System.Threading.Thread.Sleep(10);
                 for (int KEY = 8; KEY <= 190; KEY++)
