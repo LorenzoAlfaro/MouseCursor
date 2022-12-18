@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-
 namespace MouserCursor
 {
     class Program
@@ -13,44 +12,16 @@ namespace MouserCursor
         static int y_up = 807;
         static int y_down = 752;
         static void Main(string[] args)
-        {
+        {            
             IntPtr desktopWinHandle = Win32.GetDesktopWindow();
             int X=0;
             int Y=0;
             Win32.POINT p = new Win32.POINT(155, 755);
-            int[] array = new int[4];
-            
-
+            int[] array = new int[4];            
+            // Main loop
             while (true)
             {
-                // Check for mouse position
-                Point pos = Win32.GetCursorPosition();                                
-                if (inside(pos.X, pos.Y, x_left, x_right, y_up, y_down))
-                {                    
-                    
-                    array[3] = Math.Abs(pos.X - x_right);
-                    array[2] = Math.Abs(pos.X - x_left);
-                    array[1] = Math.Abs(pos.Y - y_up);
-                    array[0] = Math.Abs(pos.Y - y_down);
-                    
-                    var index = array.Select((v, i) => new { Index = i, Val = v }).FirstOrDefault(v => v.Val == array.Min()).Index;  
-                    switch (index)
-                    {
-                        case 3:
-                            Win32.SetCursorPos(x_right, pos.Y);                            
-                            break;
-                        case 2:
-                            Win32.SetCursorPos(x_left, pos.Y);                            
-                            break;
-                        case 1:
-                            Win32.SetCursorPos(pos.X, y_up);                            
-                            break;
-                        case 0:
-                            Win32.SetCursorPos(pos.X, y_down);                            
-                            break;
-                    }                  
-                }
-
+                blockArmySelectAll(array);
                 //System.Threading.Thread.Sleep(10);
                 for (int KEY = 8; KEY <= 190; KEY++)
                 {
@@ -76,7 +47,36 @@ namespace MouserCursor
                     }
                 }
             }
+        }
 
+        static void blockArmySelectAll(int[] array)
+        {
+            // Check for mouse position
+            Point pos = Win32.GetCursorPosition();
+            if (inside(pos.X, pos.Y, x_left, x_right, y_up, y_down))
+            {
+                array[3] = Math.Abs(pos.X - x_right);
+                array[2] = Math.Abs(pos.X - x_left);
+                array[1] = Math.Abs(pos.Y - y_up);
+                array[0] = Math.Abs(pos.Y - y_down);
+
+                var index = array.Select((v, i) => new { Index = i, Val = v }).FirstOrDefault(v => v.Val == array.Min()).Index;
+                switch (index)
+                {
+                    case 3:
+                        Win32.SetCursorPos(x_right, pos.Y);
+                        break;
+                    case 2:
+                        Win32.SetCursorPos(x_left, pos.Y);
+                        break;
+                    case 1:
+                        Win32.SetCursorPos(pos.X, y_up);
+                        break;
+                    case 0:
+                        Win32.SetCursorPos(pos.X, y_down);
+                        break;
+                }
+            }
         }
 
         static bool inside( int x, int y, int x_left, int x_right, int y_up, int y_down)
@@ -110,8 +110,6 @@ namespace MouserCursor
 
             return y_up;
         }
-
-
 
         static void Unselect(IntPtr desktopWinHandle)
         {            
@@ -155,12 +153,8 @@ namespace MouserCursor
         }
     }
 
-
-
     public class Win32
-    {
-        
-
+    {        
         [DllImport("User32.dll")]
         public static extern short GetAsyncKeyState(int vKey);
 
@@ -168,9 +162,7 @@ namespace MouserCursor
         public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo);
         public const uint KEYEVENTF_KEYUP = 0x0002;
         public const uint KEYEVENTF_EXTENDEDKEY = 0x0001;
-
         
-
         [Flags]
         public enum MouseEventFlags
         {
@@ -184,17 +176,14 @@ namespace MouserCursor
             RightUp = 0x00000010
         }
 
-
         [DllImport("User32.Dll")]
         public static extern long SetCursorPos(int x, int y);
 
-        
-
+       
         [DllImport("user32.dll", SetLastError = false)] public static extern IntPtr GetDesktopWindow();
 
         [DllImport("user32.dll")]
         private static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
-
 
         public static void MouseEvent(MouseEventFlags value)
         {
@@ -263,7 +252,5 @@ namespace MouserCursor
 
             return lpPoint;
         }
-
-
     }
 }
