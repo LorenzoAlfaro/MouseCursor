@@ -22,28 +22,31 @@ namespace MouserCursor
             while (true)
             {
                 blockArmySelectAll(array);
-                //System.Threading.Thread.Sleep(10);
-                for (int KEY = 8; KEY <= 190; KEY++)
-                {
-                    if (Win32.GetAsyncKeyState(KEY) == -32767)
-                    {
-                        if (KEY != 0x10)
-                        {
+                // System.Threading.Thread.Sleep(10);
+                // rapidUnqueue(desktopWinHandle);                
+            }
+        }
 
-                            if (KEY == 66) //b
-                            {
-                                Unselect(desktopWinHandle);                                                                                                                                
-                                //RightClick();                                                                
-                            }
-                            if (KEY == 78) //n
-                            {
-                                Unselect(desktopWinHandle);
-                                RightClick();
-                                //A_Press();                                
-                                //LeftClick();                                                           
-                            }
+        static void rapidUnqueue(IntPtr desktopWinHandle)
+        {
+            for (int KEY = 8; KEY <= 190; KEY++)
+            {
+                if (Win32.GetAsyncKeyState(KEY) == -32767)
+                {
+                    if (KEY != 0x10)
+                    {
+                        if (KEY == 66) // b
+                        {
+                            Unselect(desktopWinHandle);
+                            // RightClick();                                                                
                         }
-                        
+                        if (KEY == 78) // n
+                        {
+                            Unselect(desktopWinHandle);
+                            RightClick();
+                            // A_Press();                                
+                            // LeftClick();                                                           
+                        }
                     }
                 }
             }
